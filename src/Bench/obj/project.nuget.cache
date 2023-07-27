@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "aqinJJpn0Vpf5B0L9kRwODXL+J3l7ah3coGcwVjubS8r8/+4RFc4emOEp7WDLROiKQ9t9MvyCz2niNoLwD6oAw==",
+  "success": true,
+  "projectFilePath": "/root/projects/MqttBench/src/Bench/Bench.fsproj",
+  "expectedPackageFiles": [
+    "/root/.nuget/packages/fsharp.core/7.0.200/fsharp.core.7.0.200.nupkg.sha512"
+  ],
+  "logs": []
+}
