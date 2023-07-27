@@ -22,11 +22,95 @@ let runCliUtilityWithTimeout utility args timeoutSeconds =
         return output 
     }
 
+let writeLineToCsv (time, total, rate) fileName =
+    let line = $"{time},{total},{rate}\n"
+    File.AppendAllText(fileName, line)
+
+// let runJob pub pubArgs sub subArgs timeoutSeconds =
+//     async {
+//         let! results =
+//             [runCliUtilityWithTimeout pub pubArgs timeoutSeconds
+//              runCliUtilityWithTimeout sub subArgs timeoutSeconds]
+//              |> Async.Parallel
+//         let! child = Async.StartChild (fun () ->
+//             results
+//             |> List.map processLines
+//             |> List.iter (fun line -> writeLineToCsv line "job_outputs.csv"))
+//         return! child
+//     }
+
+// type JobStatus =
+//     | Success of int * string * string
+//     | Failure of int * string * string * exn
+
+// let runJob index pub pubArgs sub subArgs timeoutSeconds =
+//     async {
+//         try
+//             let! results = runCliUtilityWithTimeout pub pubArgs timeoutSeconds |> Async.RunSynchronously
+//             let! results2 = runCliUtilityWithTimeout sub subArgs timeoutSeconds |> Async.RunSynchronously
+//             return Success(index, results, results2)
+//         with
+//         | ex -> 
+//             printfn "Job failed with exception: %s" ex.Message
+//             return Failure(index, pub, sub, ex)
+//     }
+
+// let main args =
+//     printfn "Starting bench jobs"
+//     let jobStatuses =
+//         jobs
+//         |> List.mapi (fun index (u1, a1, u2, a2, t) -> runJob index u1 a1 u2 a2 t |> Async.RunSynchronously)
+//     let failedJobs = jobStatuses |> List.choose (function Failure(i, _, _, _) as failure -> Some(i, failure) | _ -> None)
+//     printfn "Retrying failed jobs"
+//     failedJobs
+//     |> List.iter (fun (index, _) -> let (u1, a1, u2, a2, t) = jobs.[index] in runJob index u1 a1 u2 a2 t |> Async.RunSynchronously |> ignore)
+//     0 // return an integer exit code
+
+
+
+// let runCliUtilityAndStreamOutput utility args =
+//     async {
+//         let proc = new Process()
+
+//         proc.StartInfo.FileName <- utility
+//         proc.StartInfo.Arguments <- args
+//         proc.StartInfo.UseShellExecute <- false
+//         proc.StartInfo.RedirectStandardOutput <- true
+
+//         // Set up the OutputDataReceived event handler
+//         proc.OutputDataReceived.Add(fun args ->
+//             match args.Data with
+//             | null -> () // Ignore null data, which signals the end of output
+//             | line -> 
+//                 // Print the line to the console
+//                 printfn "%s" line
+
+//                 // Save the line to the list
+//                 output.Add(line))
+
+//         proc.Start() |> ignore
+
+//         // Begin asynchronous read of the output
+//         proc.BeginOutputReadLine()
+
+//         let! exitCode = proc.WaitForExitAsync() |> Async.AwaitTask
+
+//         return exitCode
+//     }
+
+// // Run the function
+// runCliUtilityAndStreamOutput "ls" "-l" 
+// |> Async.RunSynchronously 
+// |> ignore
+// printfn "Output lines: %A" output
+
+// At this point, 'output' will contain all lines of output from the process
+
 type JobStatus = 
     | Success of string * string 
     | Failure of string * string * exn 
 
-    
+
 let runJob pub pubArgs sub subArgs timeoutSeconds =
     async {
         let! results =
