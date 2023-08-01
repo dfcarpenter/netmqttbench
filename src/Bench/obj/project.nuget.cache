@@ -1,10 +1,28 @@
 {
   "version": 2,
-  "dgSpecHash": "aqinJJpn0Vpf5B0L9kRwODXL+J3l7ah3coGcwVjubS8r8/+4RFc4emOEp7WDLROiKQ9t9MvyCz2niNoLwD6oAw==",
+  "dgSpecHash": "7FY1wjheswkAxXd40m8xiYnqHPkPrKl5AkYNdjefPjASrMI5FlEJ6cEjKb+jM9mZHulSfF+dGfPlbJr3Lb1vVg==",
   "success": true,
   "projectFilePath": "/root/projects/MqttBench/src/Bench/Bench.fsproj",
   "expectedPackageFiles": [
-    "/root/.nuget/packages/fsharp.core/7.0.200/fsharp.core.7.0.200.nupkg.sha512"
+    "/root/.nuget/packages/argu/6.1.1/argu.6.1.1.nupkg.sha512",
+    "/root/.nuget/packages/fparsec/1.1.1/fparsec.1.1.1.nupkg.sha512",
+    "/root/.nuget/packages/fsharp.core/7.0.200/fsharp.core.7.0.200.nupkg.sha512",
+    "/root/.nuget/packages/hopac/0.4.1/hopac.0.4.1.nupkg.sha512",
+    "/root/.nuget/packages/logary/5.0.1/logary.5.0.1.nupkg.sha512",
+    "/root/.nuget/packages/nodatime/2.4.8/nodatime.2.4.8.nupkg.sha512",
+    "/root/.nuget/packages/system.configuration.configurationmanager/4.4.0/system.configuration.configurationmanager.4.4.0.nupkg.sha512",
+    "/root/.nuget/packages/system.security.cryptography.protecteddata/4.4.0/system.security.cryptography.protecteddata.4.4.0.nupkg.sha512"
   ],
-  "logs": []
+  "logs": [
+    {
+      "code": "NU1608",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Detected package version outside of dependency constraint: Hopac 0.4.1 requires FSharp.Core (>= 4.5.0 && < 5.0.0) but version FSharp.Core 7.0.200 was resolved.",
+      "libraryId": "FSharp.Core",
+      "targetGraphs": [
+        "net7.0"
+      ]
+    }
+  ]
 }

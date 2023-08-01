@@ -34,11 +34,20 @@
         "net7.0": {
           "targetAlias": "net7.0",
           "dependencies": {
+            "Argu": {
+              "target": "Package",
+              "version": "[6.1.1, )",
+              "generatePathProperty": true
+            },
             "FSharp.Core": {
               "include": "Runtime, Compile, Build, Native, Analyzers, BuildTransitive",
               "target": "Package",
               "version": "[7.0.200, )",
               "generatePathProperty": true
+            },
+            "Logary": {
+              "target": "Package",
+              "version": "[5.0.1, )"
             }
           },
           "imports": [

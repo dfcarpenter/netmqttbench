@@ -9,4 +9,9 @@
     <Compile Include="Program.fs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Argu" Version="6.1.1" />
+    <PackageReference Include="Logary" Version="5.0.1" />
+  </ItemGroup>
+
 </Project>

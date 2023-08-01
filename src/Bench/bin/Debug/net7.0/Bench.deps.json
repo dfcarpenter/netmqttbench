@@ -8,10 +8,39 @@
     ".NETCoreApp,Version=v7.0": {
       "Bench/1.0.0": {
         "dependencies": {
-          "FSharp.Core": "7.0.200"
+          "Argu": "6.1.1",
+          "FSharp.Core": "7.0.200",
+          "Logary": "5.0.1"
         },
         "runtime": {
           "Bench.dll": {}
+        }
+      },
+      "Argu/6.1.1": {
+        "dependencies": {
+          "FSharp.Core": "7.0.200",
+          "System.Configuration.ConfigurationManager": "4.4.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Argu.dll": {
+            "assemblyVersion": "6.1.1.0",
+            "fileVersion": "6.1.1.0"
+          }
+        }
+      },
+      "FParsec/1.1.1": {
+        "dependencies": {
+          "FSharp.Core": "7.0.200"
+        },
+        "runtime": {
+          "lib/netstandard2.0/FParsec.dll": {
+            "assemblyVersion": "1.1.1.0",
+            "fileVersion": "1.1.1.0"
+          },
+          "lib/netstandard2.0/FParsecCS.dll": {
+            "assemblyVersion": "1.1.1.0",
+            "fileVersion": "1.1.1.0"
+          }
         }
       },
       "FSharp.Core/7.0.200": {
@@ -62,6 +91,74 @@
             "locale": "zh-Hant"
           }
         }
+      },
+      "Hopac/0.4.1": {
+        "dependencies": {
+          "FSharp.Core": "7.0.200"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Hopac.Core.dll": {
+            "assemblyVersion": "0.4.1.0",
+            "fileVersion": "0.4.1.0"
+          },
+          "lib/netstandard2.0/Hopac.Platform.dll": {
+            "assemblyVersion": "0.4.1.0",
+            "fileVersion": "0.4.1.0"
+          },
+          "lib/netstandard2.0/Hopac.dll": {
+            "assemblyVersion": "0.4.1.0",
+            "fileVersion": "0.4.1.0"
+          }
+        }
+      },
+      "Logary/5.0.1": {
+        "dependencies": {
+          "FParsec": "1.1.1",
+          "FSharp.Core": "7.0.200",
+          "Hopac": "0.4.1",
+          "NodaTime": "2.4.8"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Logary.dll": {
+            "assemblyVersion": "5.0.1.0",
+            "fileVersion": "5.0.1.0"
+          }
+        }
+      },
+      "NodaTime/2.4.8": {
+        "runtime": {
+          "lib/netstandard2.0/NodaTime.dll": {
+            "assemblyVersion": "2.4.8.0",
+            "fileVersion": "2.4.8.0"
+          }
+        }
+      },
+      "System.Configuration.ConfigurationManager/4.4.0": {
+        "dependencies": {
+          "System.Security.Cryptography.ProtectedData": "4.4.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/System.Configuration.ConfigurationManager.dll": {
+            "assemblyVersion": "4.0.0.0",
+            "fileVersion": "4.6.25519.3"
+          }
+        }
+      },
+      "System.Security.Cryptography.ProtectedData/4.4.0": {
+        "runtime": {
+          "lib/netstandard2.0/System.Security.Cryptography.ProtectedData.dll": {
+            "assemblyVersion": "4.0.2.0",
+            "fileVersion": "4.6.25519.3"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/win/lib/netstandard2.0/System.Security.Cryptography.ProtectedData.dll": {
+            "rid": "win",
+            "assetType": "runtime",
+            "assemblyVersion": "4.0.2.0",
+            "fileVersion": "4.6.25519.3"
+          }
+        }
       }
     }
   },
@@ -71,12 +168,61 @@
       "serviceable": false,
       "sha512": ""
     },
+    "Argu/6.1.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-5SBLYihaZ6/YNpRU+0v0QLsCk7ABmOWNOUwkXVUql2w7kJ6Hi4AFhgIv5XLTtxTid5/xrJAL+PglQkNcjANCJg==",
+      "path": "argu/6.1.1",
+      "hashPath": "argu.6.1.1.nupkg.sha512"
+    },
+    "FParsec/1.1.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Wdjf/gCNLEwd+0nUCDh9jAIIcKGwfhRramySTnTcVVgNC6i4Vp5aJklUJJfvFkEZMYNZEDGcI8pCa36/TmwmSg==",
+      "path": "fparsec/1.1.1",
+      "hashPath": "fparsec.1.1.1.nupkg.sha512"
+    },
     "FSharp.Core/7.0.200": {
       "type": "package",
       "serviceable": true,
       "sha512": "sha512-NmgUnpNH6Zu9B0SPIhojyo38gnPdkdYFYQfbd6zosEH32kbGY/g/Klk7PfOWe1NAe/O1YOMmK9KhwQ2OWsWEbg==",
       "path": "fsharp.core/7.0.200",
       "hashPath": "fsharp.core.7.0.200.nupkg.sha512"
+    },
+    "Hopac/0.4.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-o65I/+EONrwvTYSki0FmTxgA+zSDw9PrHLcRvibkTY6EVnTp3F0MQ1aKEj0tq4be0nL7vEbHzCnyQrH2a6HM8g==",
+      "path": "hopac/0.4.1",
+      "hashPath": "hopac.0.4.1.nupkg.sha512"
+    },
+    "Logary/5.0.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-p4ZFaSqzlnGeTgcWePt4rBbJgwKjQ0QrCA9sI0N9H7ydfoTa64sE/Ct6R6uVn71TjLtLpHbVDFikae0v1Nfy2g==",
+      "path": "logary/5.0.1",
+      "hashPath": "logary.5.0.1.nupkg.sha512"
+    },
+    "NodaTime/2.4.8": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-6oKjwf3TNiaNa6HdQyarK+E3sfTzNFNEUZ+7YJpWEbeL25xKG1A/yUh4PsPmWJjJ45fJq+mN/L7EdBLRg7yHwg==",
+      "path": "nodatime/2.4.8",
+      "hashPath": "nodatime.2.4.8.nupkg.sha512"
+    },
+    "System.Configuration.ConfigurationManager/4.4.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-gWwQv/Ug1qWJmHCmN17nAbxJYmQBM/E94QxKLksvUiiKB1Ld3Sc/eK1lgmbSjDFxkQhVuayI/cGFZhpBSodLrg==",
+      "path": "system.configuration.configurationmanager/4.4.0",
+      "hashPath": "system.configuration.configurationmanager.4.4.0.nupkg.sha512"
+    },
+    "System.Security.Cryptography.ProtectedData/4.4.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-cJV7ScGW7EhatRsjehfvvYVBvtiSMKgN8bOVI0bQhnF5bU7vnHVIsH49Kva7i7GWaWYvmEzkYVk1TC+gZYBEog==",
+      "path": "system.security.cryptography.protecteddata/4.4.0",
+      "hashPath": "system.security.cryptography.protecteddata.4.4.0.nupkg.sha512"
     }
   }
 }
