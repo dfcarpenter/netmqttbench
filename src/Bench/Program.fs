@@ -10,6 +10,8 @@ let runCliUtilityWithTimeout utility args timeoutSeconds =
     task {
         use proc = new Process()
         let output = new System.Collections.Generic.List<string>()
+        let window = new System.Collections.Generic.Queue<string>()
+        let windowAvgs = new System.Collections.Generic.List<float>()
 
         proc.StartInfo.FileName <- utility
         proc.StartInfo.Arguments <- args
@@ -23,8 +25,32 @@ let runCliUtilityWithTimeout utility args timeoutSeconds =
             match args.Data with 
             | null -> () // Ignore null data which signals the end of output    
             | line -> 
-                output.Add(line)
-                printfn "%s" line)
+
+                printfn "%s" line
+
+                window.Enqueue(line)
+                if window.Count > windowSize then 
+                    let _ = window.Dequeue() 
+                
+                // Calculate the average rate for the current window
+                let rates = 
+                    windows 
+                    |> Seq.map (fun line -> float (line.Split('=').[1]))
+                    |> Seq.toArray
+                let avgRate = rates |> Array.average 
+
+                // Add the average rate to the list of window averages 
+                windowAvgs.Add(avgRate)
+                if windowAvgs.Count > 5 then
+                    let _ = windowAvgs.RemoveAt(0)
+
+                let mean = windowAvgs |> List.average
+                let stdDev = Math.Sqrt(windowAvgs |> List.map (fun x -> (x - mean) ** 2.0) |> List.average)
+                
+                if Math.Abs(avgRate - mean) <= stdDev then
+                    output.Add(avgRate))
+               
+                
 
         proc.ErrorDataReceived.Add(fun args -> 
             match args.Data with 
