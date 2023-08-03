@@ -2,6 +2,7 @@
 open System
 open System.Diagnostics
 open System.Threading 
+open System.Collections.Generic
 open System.Threading.Tasks
 open System.IO
 open Argu 
@@ -9,9 +10,7 @@ open Argu
 let runCliUtilityWithTimeout utility args timeoutSeconds =
     task {
         use proc = new Process()
-        let output = new System.Collections.Generic.List<string>()
-        let window = new System.Collections.Generic.Queue<string>()
-        let windowAvgs = new System.Collections.Generic.List<float>()
+        let output = new List<string>()
 
         proc.StartInfo.FileName <- utility
         proc.StartInfo.Arguments <- args
@@ -26,32 +25,9 @@ let runCliUtilityWithTimeout utility args timeoutSeconds =
             | null -> () // Ignore null data which signals the end of output    
             | line -> 
 
-                printfn "%s" line
-
-                window.Enqueue(line)
-                if window.Count > windowSize then 
-                    let _ = window.Dequeue() 
-                
-                // Calculate the average rate for the current window
-                let rates = 
-                    windows 
-                    |> Seq.map (fun line -> float (line.Split('=').[1]))
-                    |> Seq.toArray
-                let avgRate = rates |> Array.average 
-
-                // Add the average rate to the list of window averages 
-                windowAvgs.Add(avgRate)
-                if windowAvgs.Count > 5 then
-                    let _ = windowAvgs.RemoveAt(0)
-
-                let mean = windowAvgs |> List.average
-                let stdDev = Math.Sqrt(windowAvgs |> List.map (fun x -> (x - mean) ** 2.0) |> List.average)
-                
-                if Math.Abs(avgRate - mean) <= stdDev then
-                    output.Add(avgRate))
+                output.Add(line))
                
-                
-
+            
         proc.ErrorDataReceived.Add(fun args -> 
             match args.Data with 
             | null -> () // Ignore null data which signals the end of output    
@@ -67,7 +43,7 @@ let runCliUtilityWithTimeout utility args timeoutSeconds =
 
             proc.BeginOutputReadLine()
             proc.BeginErrorReadLine()
-            do! proc.WaitForExitAsync()
+            do! Async.AwaitTask(proc.WaitForExitAsync())
 
             if proc.ExitCode <> 0 then
                 return Error (sprintf "Process exited with code %d" proc.ExitCode)
@@ -82,90 +58,95 @@ let runCliUtilityWithTimeout utility args timeoutSeconds =
 
 
 let runJob testName pub pubArgs sub subArgs timeoutSeconds =
-    task {
-        let! results =
-            [runCliUtilityWithTimeout pub pubArgs timeoutSeconds
-             runCliUtilityWithTimeout sub subArgs timeoutSeconds]
-             |> Task.WhenAll
+    async {
+        let! pubOutput = runCliUtilityWithTimeout pub pubArgs timeoutSeconds |> Async.AwaitTask
+        let! subOutput = runCliUtilityWithTimeout sub subArgs timeoutSeconds |> Async.AwaitTask
 
-        match results with 
-        | [| Ok pubOutput; Ok subOutput|] ->
+        match pubOutput, subOutput with 
+        | Ok pubOutput, Ok subOutput ->
             return Ok (testName, pubOutput, subOutput)
-        | [| Error err; _ |] ->
+        | Error err, _ ->
             return Error (sprintf "Error in pub: %s" err)
-        | [| _; Error err |] ->
+        | _, Error err ->
             return Error (sprintf "Error in sub: %s" err)
-        | _ ->
-            return Error "Unexpected error" 
-        
     }
-
 let jobs =
     [("1 sub 1 pub payload 16 qos 1", "emqtt_bench", "pub -c 1 -h 192.168.1.34 -t bench/%i -I 0 -s 16 -q 1", "emqtt_bench", "sub -c 1 -h 192.168.1.34 -t bench/# -q 1", 30);
      ("1 sub 1 pub payload 16 qos 1","emqtt_bench", "pub -c 1 -h 192.168.1.34 -t bench/%i -I 0 -s 16 -q 1", "emqtt_bench", "sub -c 1 -h 192.168.1.34 -t bench/# -q 1", 30);]
 
 
-let processLines lines =
+// let processTestString lines =
 
-    let removeInitial (str: string) =
-        str.Split('\n')
-        |> Array.skip 2 
-        |> String.concat "\n"
+//     let removeInitial (str: string) =
+//         str.Split('\n')
+//         |> Array.skip 2 
+//         |> String.concat "\n"
+//     let splitLine (line : string) =
+//         let parts = line.Split(' ')
+//         let time = parts.[0]
+//         let total = parts.[3].Split('=')[1]
+//         let rate = parts.[4].Split('=')[1]
+//         (time, total, rate)
+    
+//     let modifiedLines =
+//         lines 
+//         |> removeInitial
+//         |> fun str -> str.Split('\n')
+//         |> Array.toList
+//     let parsedLines = modifiedLines |> List.map splitLine
+//     let lastLine = List.last parsedLines
+//     let totalRate = parsedLines |> List.sumBy (fun (_, _, rate) -> float rate)
+//     let averageRate = totalRate / float (List.length parsedLines)
+//     let avgRateString = string averageRate
+
+//     seq { (lastLine, avgRateString) }
+
+let processTestString lines =
     let splitLine (line : string) =
         let parts = line.Split(' ')
         let time = parts.[0]
         let total = parts.[3].Split('=')[1]
         let rate = parts.[4].Split('=')[1]
         (time, total, rate)
-    
-    let modifiedLines =
-        lines 
-        |> removeInitial
-        |> fun str -> str.Split('\n')
-        |> Array.toList
-    let parsedLines = modifiedLines |> List.map splitLine
-    let lastLine = List.last parsedLines
-    let totalRate = parsedLines |> List.sumBy (fun (_, _, rate) -> float rate)
-    let averageRate = totalRate / float (List.length parsedLines)
 
-    (lastLine, averageRate)    
+    let parsedLines = lines |> Array.map splitLine
+    let lastLine = parsedLines |> Array.last
+    let totalRate = parsedLines |> Array.sumBy (fun (_, _, rate) -> float rate)
+    let averageRate = totalRate / float (Array.length parsedLines)
+    let avgRateString = string averageRate
+
+    seq { (lastLine, avgRateString) }
+
+   
 
 
-// type CliArguments =
-//     | Host of string 
-//     | Port of tcp_port:int
-//     | Duration of int 
-//     | FilePath of path:string 
+let processAndSaveOutput (name, pubOutput, subOutput) =
+    async {
+        let pubOutputLines = pubOutput |> processTestString
+        let subOutputLines = subOutput |> processTestString
 
-//     interface IArgParserTemplate with 
-//         member s.Usage =
-//             match s with 
-//             | Host _ -> "Host to connect to"
-//             | Port _ -> "Port to connect to"
-//             | Duration _ -> "Duration of the test in minutes"
+        let filename = sprintf "%s.txt" name 
+        use writer = new StreamWriter(filename)
+        for line in pubOutputLines do
+            writer.WriteLine(sprintf "Pub: %A" line)
+        for line in subOutputLines do
+            writer.WriteLine(sprintf "Sub: %A" line)
+    }
 
 [<EntryPoint>]
 let main args =
-    // let argv = Environment.GetCommandLineArgs()
-    // let parser = new ArgumentParser<CliArguments>(programName = "mqtt_bench")
-
-    // let args =
-    //     try 
-    //         parser.Parse(argv)
-    //     with 
-    //     | :? ArguException as e ->
-    //         printfn "%s" (e.Message)
-    //         Environment.Exit 1 |> ignore
-    //         Unchecked.defaultof<_>
-
     printfn "Starting bench jobs"
    
-    jobs 
-    |> List.map (fun (name, u1, a1, u2, a2, t) ->
-        match Task.Run(fun () -> runJob name u1 a1 u2 a2 t).Result with
+    jobs
+    |> List.map (fun (name, u1, a1, u2, a2, t) -> 
+        match runJob name u1 a1 u2 a2 t |> Async.RunSynchronously with
         | Ok (name, pubOutput, subOutput) ->
             printfn "Pub: %A" pubOutput
-        | Error err -> 
+            printfn "Sub: %A" subOutput
+            let result = processAndSaveOutput (name, pubOutput, subOutput)
+            
+            Async.RunSynchronously result
+        | Error err ->
             printfn "Error: %s" err)
     |> ignore
     0 // return an integer exit code
